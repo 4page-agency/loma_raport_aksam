@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { ipcRenderer } = require('electron');
 
 let currentFilters = {}; // Globalna zmienna do przechowywania bieżących filtrów
 let originalData = []; // Globalna zmienna do przechowywania wszystkich danych
@@ -46,18 +47,19 @@ console.log('Original Data Structure:', originalData);
 
 // Obsługa kliknięcia przycisków filtrowania
 document.querySelectorAll('.filter-button').forEach((button) => {
-	button.addEventListener('click', () => {
-		const status = button.getAttribute('data-status');
-		console.log('Filtr statusu:', status);
+        button.addEventListener('click', () => {
+                const status = button.getAttribute('data-status');
+                console.log('Filtr statusu:', status);
 
-		let filteredData = originalData.filter((row) => {
-			const rowStatus = row.status ? row.status.trim().toUpperCase() : ''; // Normalizacja
-			return status === 'all' ? true : rowStatus === status.toUpperCase();
-		});
+                let filteredData = originalData.filter((row) => {
+                        const rowStatus = row.status ? row.status.trim().toUpperCase() : ''; // Normalizacja
+                        return status === 'all' ? true : rowStatus === status.toUpperCase();
+                });
 
-		console.log('Dane po filtrowaniu:', filteredData);
-		renderFetchedData(filteredData); // Wyświetl dane przefiltrowane
-	});
+                console.log('Dane po filtrowaniu:', filteredData);
+                currentData = filteredData;
+                renderFetchedData(currentData); // Wyświetl dane przefiltrowane
+        });
 });
 
 document
@@ -667,12 +669,33 @@ function filterReportsByMachine(machineNumber, showAll = false) {
 
 // Funkcja filtrowania raportów według programu
 function filterReportsByProgram(programNumber) {
-	const allReports = document.querySelectorAll('.report-section');
-	allReports.forEach((report) => {
-		report.style.display = report.innerHTML.includes(
-			`Nr programu: ${programNumber}`
-		)
-			? 'block'
-			: 'none';
-	});
+        const allReports = document.querySelectorAll('.report-section');
+        allReports.forEach((report) => {
+                report.style.display = report.innerHTML.includes(
+                        `Nr programu: ${programNumber}`
+                )
+                        ? 'block'
+                        : 'none';
+        });
 }
+
+document.getElementById('export_data').addEventListener('click', async () => {
+        if (!currentData || currentData.length === 0) {
+                alert('Brak danych do eksportu.');
+                return;
+        }
+        try {
+                const result = await ipcRenderer.invoke(
+                        'export-data-to-csv',
+                        currentData
+                );
+                if (result.canceled) {
+                        alert('Zapis anulowany.');
+                } else {
+                        alert('Dane zapisane pomyślnie.');
+                }
+        } catch (err) {
+                console.error('Błąd eksportu danych:', err);
+                alert('Wystąpił błąd podczas eksportu danych.');
+        }
+});
