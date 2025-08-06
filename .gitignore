@@ -1,0 +1,4 @@
+/node_modules/
+*.exe
+/dist/
+/dist/win-unpacked/
