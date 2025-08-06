@@ -581,12 +581,13 @@ async function fetchSelectedReportsHandler() {
 	}
 
 	// Renderowanie pobranych danych w tabeli i raportów
-	if (allData.length > 0) {
-		renderFetchedData(allData.flat()); // Renderowanie tabeli z danymi
-		renderReports(allData, formDetails); // Generowanie raportów
-	} else {
-		fetchedDataContainer.innerHTML = '<p>Brak danych do wyświetlenia.</p>';
-	}
+        if (allData.length > 0) {
+                currentData = allData.flat();
+                renderFetchedData(currentData); // Renderowanie tabeli z danymi
+                renderReports(allData, formDetails); // Generowanie raportów
+        } else {
+                fetchedDataContainer.innerHTML = '<p>Brak danych do wyświetlenia.</p>';
+        }
 
 	alert('Dane zostały pobrane i wyświetlone.');
 }
