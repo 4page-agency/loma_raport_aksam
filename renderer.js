@@ -687,7 +687,7 @@ document.getElementById('export_data').addEventListener('click', async () => {
         }
         try {
                 const result = await ipcRenderer.invoke(
-                        'export-data-to-csv',
+                        'export-data-to-excel',
                         currentData
                 );
                 if (result.canceled) {
