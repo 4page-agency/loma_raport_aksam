@@ -578,11 +578,14 @@ async function fetchSelectedReportsHandler() {
 				error
 			);
 		}
-	}
+        }
 
-	// Renderowanie pobranych danych w tabeli i raportów
+        // Renderowanie pobranych danych w tabeli i raportów
         if (allData.length > 0) {
-                currentData = allData.flat();
+                // Spłaszcz dane i zapisz je jako bazowe dla filtrów
+                originalData = normalizeData(allData.flat());
+                currentData = [...originalData];
+
                 renderFetchedData(currentData); // Renderowanie tabeli z danymi
                 renderReports(allData, formDetails); // Generowanie raportów
         } else {
