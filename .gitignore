@@ -2,3 +2,4 @@
 *.exe
 /dist/
 /dist/win-unpacked/
+/dist 1.7/
