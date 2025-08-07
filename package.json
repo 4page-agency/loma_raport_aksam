@@ -1,6 +1,6 @@
 {
 	"name": "loma-raport-aksam",
-	"version": "1.6.0",
+	"version": "1.7.0",
 	"description": "LOMA RAPORT",
 	"main": "main.js",
 	"dependencies": {
