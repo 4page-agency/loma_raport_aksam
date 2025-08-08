@@ -63,67 +63,93 @@ document.querySelectorAll('.filter-button').forEach((button) => {
 });
 
 document
-	.getElementById('fetch_all_data')
-	.addEventListener('click', async () => {
-		const forms = document.querySelectorAll('.form-section');
-		const dataSets = []; // Lista do przechowywania zestawów danych
-		const formDetails = []; // Lista do przechowywania szczegółów formularzy
+        .getElementById('fetch_all_data')
+        .addEventListener('click', async () => {
+                const spinner = document.getElementById('loading-spinner');
+                const fetchButton = document.getElementById('fetch_all_data');
+                spinner.style.display = 'block';
+                fetchButton.disabled = true;
+                try {
+                        const forms = document.querySelectorAll('.form-section');
+                        const dataSets = []; // Lista do przechowywania zestawów danych
+                        const formDetails = []; // Lista do przechowywania szczegółów formularzy
 
-		// Iteracja po wszystkich formularzach
-		for (const form of forms) {
-			const startDateInput = form.querySelector('.start_date');
-			const startTimeInput = form.querySelector('.start_time');
-			const endDateInput = form.querySelector('.end_date');
-			const endTimeInput = form.querySelector('.end_time');
-			const machineNumberInput = form.querySelector('.machine_number');
-			const programNumberInput = form.querySelector('.program_number');
+                        // Iteracja po wszystkich formularzach
+                        for (const form of forms) {
+                                const startDateInput = form.querySelector('.start_date');
+                                const startTimeInput = form.querySelector('.start_time');
+                                const endDateInput = form.querySelector('.end_date');
+                                const endTimeInput = form.querySelector('.end_time');
+                                const machineNumberInput = form.querySelector('.machine_number');
+                                const programNumberInput = form.querySelector('.program_number');
 
-			if (!startDateInput?.value || !endDateInput?.value) {
-				console.warn(
-					'Brak wymaganych dat w formularzu. Pomijam ten formularz.'
-				);
-				continue;
-			}
+                                if (!startDateInput?.value || !endDateInput?.value) {
+                                        console.warn(
+                                                'Brak wymaganych dat w formularzu. Pomijam ten formularz.'
+                                        );
+                                        continue;
+                                }
 
-			// Formatowanie dat
-			const startDate = `${startDateInput.value}T${
-				startTimeInput.value || '00:00'
-			}`;
-			const endDate = `${endDateInput.value}T${endTimeInput.value || '23:59'}`;
-			const machineNumber = machineNumberInput?.value || '';
-			const programNumber = programNumberInput?.value || '';
+                                // Formatowanie dat
+                                const startDate = `${startDateInput.value}T${
+                                        startTimeInput.value || '00:00'
+                                }`;
+                                const endDate = `${endDateInput.value}T${
+                                        endTimeInput.value || '23:59'
+                                }`;
+                                const machineNumber = machineNumberInput?.value || '';
+                                const programNumber = programNumberInput?.value || '';
 
-			formDetails.push({ startDate, endDate, machineNumber, programNumber });
+                                formDetails.push({
+                                        startDate,
+                                        endDate,
+                                        machineNumber,
+                                        programNumber,
+                                });
 
-			try {
-				const response = await axios.get('http://192.168.0.248:5002/api/data', {
-					params: {
-						start_date: startDate,
-						end_date: endDate,
-						machine_number: machineNumber,
-						program_number: programNumber,
-					},
-				});
+                                try {
+                                        const response = await axios.get(
+                                                'http://192.168.0.248:5002/api/data',
+                                                {
+                                                        params: {
+                                                                start_date: startDate,
+                                                                end_date: endDate,
+                                                                machine_number: machineNumber,
+                                                                program_number: programNumber,
+                                                        },
+                                                }
+                                        );
 
-				if (Array.isArray(response.data)) {
-					dataSets.push(response.data);
-				} else {
-					console.warn('Otrzymane dane nie są tablicą:', response.data);
-				}
-			} catch (error) {
-				console.error('Błąd podczas pobierania danych z API:', error.message);
-			}
-		}
+                                        if (Array.isArray(response.data)) {
+                                                dataSets.push(response.data);
+                                        } else {
+                                                console.warn(
+                                                        'Otrzymane dane nie są tablicą:',
+                                                        response.data
+                                                );
+                                        }
+                                } catch (error) {
+                                        console.error(
+                                                'Błąd podczas pobierania danych z API:',
+                                                error.message
+                                        );
+                                }
+                        }
 
-		if (dataSets.length > 0) {
-			originalData = dataSets.flat(); // Połącz wszystkie dane w jedną listę
-			currentData = [...originalData];
-			renderFetchedData(currentData); // Wyświetlenie wszystkich danych
-			renderReports(dataSets, formDetails); // Generowanie raportów
-		} else {
-			document.getElementById('results').innerText = 'Brak danych do pobrania.';
-		}
-	});
+                        if (dataSets.length > 0) {
+                                originalData = dataSets.flat(); // Połącz wszystkie dane w jedną listę
+                                currentData = [...originalData];
+                                renderFetchedData(currentData); // Wyświetlenie wszystkich danych
+                                renderReports(dataSets, formDetails); // Generowanie raportów
+                        } else {
+                                document.getElementById('results').innerText =
+                                        'Brak danych do pobrania.';
+                        }
+                } finally {
+                        spinner.style.display = 'none';
+                        fetchButton.disabled = false;
+                }
+        });
 
 // Obsługa dynamicznego dodawania formularzy
 document.getElementById('add_form').addEventListener('click', () => {
