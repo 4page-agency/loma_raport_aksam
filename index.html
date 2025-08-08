@@ -266,6 +266,28 @@
     margin: 10px 0;
 }
 
+#loading-spinner {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    margin-left: -25px;
+    border: 6px solid #ccc;
+    border-top-color: #255f3b;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 1000;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 		</style>
 	</head>
 	<d>
@@ -339,11 +361,12 @@
 
 				<div id="content-reports" class="content">
 					<h2>Raporty</h2>
-					<div id="report_data"></div>
-				</div>
+                                <div id="report_data"></div>
+                                </div>
 
-				<script src="renderer.js"></script>
-			</body>
-		</html>
-	</d>
+                                <div id="loading-spinner"></div>
+                                <script src="renderer.js"></script>
+                        </body>
+                </html>
+        </d>
 </html>
